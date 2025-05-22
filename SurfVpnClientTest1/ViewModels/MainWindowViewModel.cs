@@ -92,18 +92,13 @@ namespace SurfVpnClientTest1.ViewModels
 
         public async void Connect()
         {
-            if (!File.Exists(ovpnFilePath))
+            // CHeck if the selected connection profile is null or empty
+            if (SelectedConnectionProfile == null || string.IsNullOrEmpty(SelectedConnectionProfile.Path))
             {
-                LogsTextBlock = "The specified .ovpn file does not exist.";
+                LogsTextBlock = "Please select a valid connection profile.";
                 return;
             }
-
-            if (!File.Exists(openVpnExePath))
-            {
-                LogsTextBlock = "OpenVPN executable not found.";
-                return;
-            }
-
+            
             LogsTextBlock = "Starting OpenVPN connection...";
 
             // Start OpenVPN process
@@ -112,7 +107,7 @@ namespace SurfVpnClientTest1.ViewModels
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = openVpnExePath,
-                    Arguments = $"--config \"{ovpnFilePath}\"",
+                    Arguments = $"--config \"{SelectedConnectionProfile.Path}\"",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
