@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using SurfVpnClientTest1.Models;
+using SurfVpnClientTest1.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,13 +24,47 @@ namespace SurfVpnClientTest1.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private ConnectionProfileService connectionProfileService;
 
         public MainWindowViewModel()
         {
             ConnectCommand = new RelayCommand(Connect, CanConnect);
+            connectionProfileService = new ConnectionProfileService();
         }
 
         public ICommand ConnectCommand { get; private set; }
+
+        private List<ConnectionProfile> _connectionProfiles;
+        public List<ConnectionProfile> ConnectionProfiles
+        {
+            get
+            {                
+              _connectionProfiles = connectionProfileService.GetConnectionProfiles();   
+                return _connectionProfiles;
+            }
+            set
+            {
+                _connectionProfiles = connectionProfileService.GetConnectionProfiles();
+                OnPropertyChanged(nameof(ConnectionProfiles));
+            }
+        }
+
+        // Intorduce property SelectedConnectionProfile
+        private ConnectionProfile _selectedConnectionProfile;
+        public ConnectionProfile SelectedConnectionProfile
+        {
+            get => _selectedConnectionProfile;
+            set
+            {
+                _selectedConnectionProfile = value;
+                OnPropertyChanged(nameof(SelectedConnectionProfile));
+                // Update the ovpnFilePath based on the selected profile
+                if (value != null)
+                {
+                    ovpnFilePath = value.Path;
+                }
+            }
+        }
 
         private string _connectionStatus = "Disconnected";
         public string ConnectionStatus

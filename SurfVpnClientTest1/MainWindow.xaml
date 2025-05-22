@@ -58,10 +58,14 @@
         <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Margin="0,5,0,5">
             select a server:
         </Label>
-        <ComboBox Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="16" Margin="0,5,0,5">
-            <ComboBoxItem Content="East US"></ComboBoxItem>
-            <ComboBoxItem Content="West Europe"></ComboBoxItem>
-            <ComboBoxItem Content="Japan East"></ComboBoxItem>
+        <ComboBox Grid.Row="3" Grid.ColumnSpan="2" Name="ServersDropDown"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Stretch"
+                  FontSize="16"
+                  Margin="0,5,0,5"
+                  ItemsSource="{Binding ConnectionProfiles, Mode=OneWay}"
+                  SelectedItem="{Binding SelectedConnectionProfile, Mode=TwoWay}"
+                  DisplayMemberPath="Name">
         </ComboBox>
 
         <!-- Connect Button -->
