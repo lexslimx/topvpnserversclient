@@ -1,0 +1,17 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+  <Fragment>
+    <!-- Define a reference to the OpenVPN MSI package -->
+    <PackageGroup Id="OpenVPNPackage">
+      <MsiPackage 
+        Id="OpenVPNMsi"
+        SourceFile="Prerequisites\OpenVPN-2.6.14-I001-amd64.msi"
+        Permanent="no"
+        Vital="yes"
+        DisplayInternalUI="yes"
+        DisplayName="OpenVPN 2.6.14">
+        <MsiProperty Name="ALLUSERS" Value="1" />
+      </MsiPackage>
+    </PackageGroup>
+  </Fragment>
+</Wix>
