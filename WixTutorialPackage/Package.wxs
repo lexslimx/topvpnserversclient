@@ -1,5 +1,5 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Package Id="TODO_Manufacturer.WixTutorialPackage" Name="WixTutorialPackage" Manufacturer="Top Vpn Servers" Version="1.0.0.0" UpgradeCode="b13dcf93-d37f-4c6f-b67b-280e0051c511">
+  <Package Id="TODO_Manufacturer.WixTutorialPackage" Name="TopVpn" Manufacturer="Top Vpn Servers" Version="1.0.0.0" UpgradeCode="b13dcf93-d37f-4c6f-b67b-280e0051c511">
     <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
 
     <Feature Id="Main">
