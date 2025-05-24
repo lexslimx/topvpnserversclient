@@ -26,6 +26,8 @@ namespace SurfVpnClientTest1.ViewModels
        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         private ConnectionProfileService connectionProfileService;
 
+        Process openVpnProcess;
+
         public MainWindowViewModel()
         {
             ConnectCommand = new RelayCommand(Connect, CanConnect);
@@ -102,12 +104,12 @@ namespace SurfVpnClientTest1.ViewModels
             LogsTextBlock = "Starting OpenVPN connection...";
 
             // Start OpenVPN process
-            var process = new Process
+            openVpnProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = openVpnExePath,
-                    Arguments = $"--config \"{SelectedConnectionProfile.Path}\"",
+                    Arguments = $"--config \"{SelectedConnectionProfile.Path}\" --management 127.0.0.1 7505",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -117,23 +119,23 @@ namespace SurfVpnClientTest1.ViewModels
             };
 
             // Redirect output and error streams
-            process.OutputDataReceived += (sender, e) => LogsTextBlock = e.Data;
-            process.ErrorDataReceived += (sender, e) => LogsTextBlock = ("ERROR: " + e.Data);
+            openVpnProcess.OutputDataReceived += (sender, e) => LogsTextBlock = e.Data;
+            openVpnProcess.ErrorDataReceived += (sender, e) => LogsTextBlock = ("ERROR: " + e.Data);
 
 
-            process.Start();
+            openVpnProcess.Start();
 
             // Start reading outputs
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
+            openVpnProcess.BeginOutputReadLine();
+            openVpnProcess.BeginErrorReadLine();
 
             // Wait for the process to exit
-            await process.WaitForExitAsync();
+            await openVpnProcess.WaitForExitAsync();
 
-            LogsTextBlock = $"OpenVPN process exited with code {process.ExitCode}.";
+            LogsTextBlock = $"OpenVPN process exited with code {openVpnProcess.ExitCode}.";
 
             // Check if the process exited successfully
-            if (process.ExitCode != 0)
+            if (openVpnProcess.ExitCode != 0)
             {
                 LogsTextBlock = "Failed to connect to the VPN. Check the OpenVPN logs for more details.";
                 ConnectionStatus = "Disconnected";
@@ -149,7 +151,25 @@ namespace SurfVpnClientTest1.ViewModels
 
         public void Disconnect()
         {
-            throw new NotImplementedException();
+            if (openVpnProcess != null && !openVpnProcess.HasExited)
+            {
+                try
+                {
+                    openVpnProcess.Kill(true); // Kill the process and any child processes
+                    openVpnProcess.WaitForExit();
+                    LogsTextBlock = "Disconnected from VPN.";
+                    ConnectionStatus = "Disconnected";
+                    _isConnected = false;
+                }
+                catch (Exception ex)
+                {
+                    LogsTextBlock = $"Error disconnecting: {ex.Message}";
+                }
+            }
+            else
+            {
+                LogsTextBlock = "No active VPN connection to disconnect.";
+            }
         }
 
         private bool CanConnect()
