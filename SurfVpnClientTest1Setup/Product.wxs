@@ -1,0 +1,40 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Product Id="*" Name="SurfVpnClientTest1" Language="1033" Version="1.0.0.0" Manufacturer="Your Company" UpgradeCode="PUT-GUID-HERE">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
+    <Feature Id="Main" Title="SurfVpnClientTest1" Level="1">
+      <ComponentGroupRef Id="AppComponents" />
+    </Feature>
+    <ui:WixUI Id="WixUI_Minimal" />
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="SurfVpnClientTest1" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="AppComponents" Directory="INSTALLFOLDER">
+      <Component Id="AppExe" Guid="*">
+        <File Source="..\SurfVpnClientTest1\bin\$(var.Configuration)\$(var.Platform)\SurfVpnClientTest1.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="AppDll" Guid="*">
+        <File Source="..\SurfVpnClientTest1\bin\$(var.Configuration)\$(var.Platform)\SurfVpnClientTest1.dll" />
+      </Component>
+      <Component Id="AppDeps" Guid="*">
+        <File Source="..\SurfVpnClientTest1\bin\$(var.Configuration)\$(var.Platform)\SurfVpnClientTest1.deps.json" />
+      </Component>
+      <Component Id="AppRuntimeConfig" Guid="*">
+        <File Source="..\SurfVpnClientTest1\bin\$(var.Configuration)\$(var.Platform)\SurfVpnClientTest1.runtimeconfig.json" />
+      </Component>
+      <Component Id="SystemTextJson" Guid="*">
+        <File Source="..\SurfVpnClientTest1\bin\$(var.Configuration)\$(var.Platform)\System.Text.Json.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

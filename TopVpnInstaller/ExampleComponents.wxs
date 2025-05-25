@@ -1,0 +1,21 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="ExampleComponents" Directory="INSTALLFOLDER">
+		<Component Id="AppExe" Guid="*">
+			<File Source="SurfVpnClientTest1.exe" KeyPath="yes" />
+		</Component>
+		<Component Id="AppDeps" Guid="*">
+			<File Source="SurfVpnClientTest1.deps.json" />
+		</Component>
+		<Component Id="AppRuntimeConfig" Guid="*">
+			<File Source="SurfVpnClientTest1.runtimeconfig.json" />
+		</Component>
+		<Component Id="AppDLL" Guid="*">
+			<File Source="SurfVpnClientTest1.dll" />
+		</Component>
+		<Component Id="SystemTextJson" Guid="*">
+			<File Source="System.Text.Json.dll" />
+		</Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
