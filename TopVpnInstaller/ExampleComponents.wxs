@@ -13,6 +13,9 @@
 		<Component Id="AppDLL" Guid="*">
 			<File Source="SurfVpnClientTest1.dll" />
 		</Component>
+		<Component Id="MvvmDLL" Guid="*">
+			<File Source="CommunityToolkit.Mvvm.dll" />
+		</Component>
 		<Component Id="SystemTextJson" Guid="*">
 			<File Source="System.Text.Json.dll" />
 		</Component>
