@@ -1,24 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Fragment>
-    <ComponentGroup Id="ExampleComponents" Directory="INSTALLFOLDER">
-		<Component Id="AppExe" Guid="*">
-			<File Source="SurfVpnClientTest1.exe" KeyPath="yes" />
-		</Component>
-		<Component Id="AppDeps" Guid="*">
-			<File Source="SurfVpnClientTest1.deps.json" />
-		</Component>
-		<Component Id="AppRuntimeConfig" Guid="*">
-			<File Source="SurfVpnClientTest1.runtimeconfig.json" />
-		</Component>
-		<Component Id="AppDLL" Guid="*">
-			<File Source="SurfVpnClientTest1.dll" />
-		</Component>
-		<Component Id="MvvmDLL" Guid="*">
-			<File Source="CommunityToolkit.Mvvm.dll" />
-		</Component>
-		<Component Id="SystemTextJson" Guid="*">
-			<File Source="System.Text.Json.dll" />
-		</Component>
-    </ComponentGroup>
-  </Fragment>
+
+	<!-- Directory structure -->
+	<Fragment>
+		<Directory Id="MYTARGETDIR" Name=".">
+			<Directory Id="ProgramFiles64Folder">
+				<Directory Id="MYINSTALLFOLDER" Name="SurfVpnClientTest1" />
+			</Directory>
+			<Directory Id="MYDESKTOPFOLDER" Name="Desktop" />
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="TopVpnInstaller" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<!-- Application files -->
+	<Fragment>
+		<ComponentGroup Id="ExampleComponents" Directory="MYINSTALLFOLDER">
+
+			<Component Id="AppExe" Guid="*">
+				<File Source="SurfVpnClientTest1.exe" KeyPath="yes" />
+			</Component>
+
+			<Component Id="AppDeps" Guid="*">
+				<File Source="SurfVpnClientTest1.deps.json" KeyPath="yes" />
+			</Component>
+
+			<Component Id="AppRuntimeConfig" Guid="*">
+				<File Source="SurfVpnClientTest1.runtimeconfig.json" KeyPath="yes" />
+			</Component>
+
+			<Component Id="AppDLL" Guid="*">
+				<File Source="SurfVpnClientTest1.dll" KeyPath="yes" />
+			</Component>
+
+			<Component Id="MvvmDLL" Guid="*">
+				<File Source="CommunityToolkit.Mvvm.dll" KeyPath="yes" />
+			</Component>
+
+			<Component Id="SystemTextJson" Guid="*">
+				<File Source="System.Text.Json.dll" KeyPath="yes" />
+			</Component>
+
+			<!-- Shortcuts component -->
+			<Component Id="AppShortcuts" Guid="*">
+				<!-- Desktop Shortcut -->
+				<Shortcut Id="DesktopShortcut"
+						  Directory="MYDESKTOPFOLDER"
+						  Name="SurfVpnClientTest1"
+						  Description="Launch SurfVpnClientTest1"
+						  Target="[MYINSTALLFOLDER]SurfVpnClientTest1.exe"
+						  WorkingDirectory="MYINSTALLFOLDER" />
+
+				<!-- Start Menu Shortcut -->
+				<Shortcut Id="StartMenuShortcut"
+						  Directory="ApplicationProgramsFolder"
+						  Name="SurfVpnClientTest1"
+						  Description="Launch SurfVpnClientTest1"
+						  Target="[MYINSTALLFOLDER]SurfVpnClientTest1.exe"
+						  WorkingDirectory="MYINSTALLFOLDER" />
+
+				<!-- Remove Start Menu folder on uninstall -->
+				<RemoveFolder Id="RemoveStartMenuFolder"
+							  On="uninstall"
+							  Directory="ApplicationProgramsFolder" />
+
+				<!-- Registry value to act as KeyPath -->
+				<RegistryValue Root="HKCU"
+							   Key="Software\TopVpnInstaller"
+							   Name="shortcutsinstalled"
+							   Type="integer"
+							   Value="1"
+							   KeyPath="yes" />
+			</Component>
+
+		</ComponentGroup>
+	</Fragment>
+
+	<!-- Feature definition -->
+	<Fragment>
+		<Feature Id="MainFeature" Title="SurfVpnClientTest1" Level="1">
+			<ComponentGroupRef Id="ExampleComponents" />
+		</Feature>
+	</Fragment>
+
 </Wix>
