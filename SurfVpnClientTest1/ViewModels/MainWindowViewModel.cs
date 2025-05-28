@@ -26,12 +26,11 @@ namespace SurfVpnClientTest1.ViewModels
        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         private ConnectionProfileService connectionProfileService;
 
-        Process openVpnProcess;
-
         public MainWindowViewModel()
         {
             ConnectCommand = new RelayCommand(Connect, CanConnect);
             connectionProfileService = new ConnectionProfileService();
+            IsVpnConnected();
         }
 
         public ICommand ConnectCommand { get; private set; }
@@ -50,6 +49,8 @@ namespace SurfVpnClientTest1.ViewModels
                 OnPropertyChanged(nameof(ConnectionProfiles));
             }
         }
+
+        public string ConnectButtonText => IsConnected == true ? "Disconnect" : "Connect";
 
         // Intorduce property SelectedConnectionProfile
         private ConnectionProfile _selectedConnectionProfile;
@@ -81,6 +82,17 @@ namespace SurfVpnClientTest1.ViewModels
 
         private string _logsTextBlock = "";
         private bool _isConnected = false;
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set
+            {            
+                if(value == _isConnected) return; // Avoid unnecessary updates
+                _isConnected = value;
+                OnPropertyChanged(nameof(IsConnected));
+                OnPropertyChanged(nameof(ConnectButtonText)); // Notify UI to update button text
+            }
+        }
 
         public string LogsTextBlock
         {
@@ -94,6 +106,11 @@ namespace SurfVpnClientTest1.ViewModels
 
         public async void Connect()
         {
+            if (IsVpnConnected())
+            {
+                Disconnect();
+            }
+
             // CHeck if the selected connection profile is null or empty
             if (SelectedConnectionProfile == null || string.IsNullOrEmpty(SelectedConnectionProfile.Path))
             {
@@ -104,7 +121,7 @@ namespace SurfVpnClientTest1.ViewModels
             LogsTextBlock = "Starting OpenVPN connection...";
 
             // Start OpenVPN process
-            openVpnProcess = new Process
+            Process openVpnProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -139,43 +156,122 @@ namespace SurfVpnClientTest1.ViewModels
             {
                 LogsTextBlock = "Failed to connect to the VPN. Check the OpenVPN logs for more details.";
                 ConnectionStatus = "Disconnected";
-                _isConnected = false;
+                IsConnected = false;
             }
             else
             {
                 MessageBox.Show("Connected to VPN successfully.");
                 ConnectionStatus = "Connected";
-                _isConnected = true;
+                IsConnected = true;
             }
         }
 
         public void Disconnect()
         {
-            if (openVpnProcess != null && !openVpnProcess.HasExited)
+            // Get the running openvpn process
+            var openVpnProcess = Process.GetProcessesByName("openvpn").FirstOrDefault();
+
+            if (openVpnProcess == null)
             {
-                try
-                {
-                    openVpnProcess.Kill(true); // Kill the process and any child processes
-                    openVpnProcess.WaitForExit();
-                    LogsTextBlock = "Disconnected from VPN.";
-                    ConnectionStatus = "Disconnected";
-                    _isConnected = false;
-                }
-                catch (Exception ex)
-                {
-                    LogsTextBlock = $"Error disconnecting: {ex.Message}";
-                }
+                Console.WriteLine("No OpenVPN processes are running.");
+                IsConnected = false;
+                return;
             }
-            else
+
+            try
             {
-                LogsTextBlock = "No active VPN connection to disconnect.";
+                // Try to send 'signal SIGTERM' to the OpenVPN management interface
+                using (var client = new System.Net.Sockets.TcpClient())
+                {
+                    client.Connect("127.0.0.1", 7505);
+                    using (var stream = client.GetStream())
+                    using (var writer = new StreamWriter(stream) { AutoFlush = true })
+                    using (var reader = new StreamReader(stream))
+                    {
+                        // Read initial greeting
+                        string line;
+                        while (!string.IsNullOrEmpty(line = reader.ReadLine()))
+                        {
+                            if (line.Contains("ENTER PASSWORD") || line.Contains(">")) break;
+                        }
+                        // Send SIGTERM command
+                        writer.WriteLine("signal SIGTERM");
+                        // Optionally, read response
+                        while (!string.IsNullOrEmpty(line = reader.ReadLine()))
+                        {
+                            if (line.Contains(">")) break;
+                        }
+                        writer.WriteLine("exit");
+                    }
+                }
+
+                openVpnProcess.WaitForExit(5000); // Wait up to 5 seconds for process to exit
+
+                if (!openVpnProcess.HasExited)
+                {
+                    openVpnProcess.Kill(true); // Fallback: force kill if still running
+                    openVpnProcess.WaitForExit();
+                    IsConnected = false;
+                }
+
+                LogsTextBlock = "Disconnected from VPN.";
+                ConnectionStatus = "Disconnected";
+                IsConnected = false;
+            }
+            catch (Exception ex)
+            {
+                LogsTextBlock = $"Error disconnecting: {ex.Message}";
+                IsConnected = false;
+                throw new Exception(ex.Message);
             }
         }
 
         private bool CanConnect()
         {
             // Command can only execute if not already connected
-            return !_isConnected;
+            return true;
+        }
+
+        private bool IsVpnConnected()
+        {
+            try
+            {
+                using (var client = new System.Net.Sockets.TcpClient())
+                {
+                    client.Connect("127.0.0.1", 7505);
+                    using (var stream = client.GetStream())
+                    using (var writer = new StreamWriter(stream) { AutoFlush = true })
+                    using (var reader = new StreamReader(stream))
+                    {
+                        // Read initial greeting
+                        string line;
+                        while (!string.IsNullOrEmpty(line = reader.ReadLine()))
+                        {
+                            if (line.Contains(">")) break;
+                        }
+                        // Send 'state' command to management interface
+                        writer.WriteLine("state");
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if (line.Contains(">")) break;
+                            // Look for a line like: >STATE,...,CONNECTED,SUCCESS,...
+                            if (line.Contains("CONNECTED,SUCCESS")) { 
+                                IsConnected = true;
+                                return true;
+                            }
+                        }
+                        writer.WriteLine("exit");
+                    }
+                }
+            }
+            catch
+            {
+                // Could not connect to management interface or parse state
+                IsConnected = false;
+                throw new InvalidOperationException("Could not determine VPN connection status. Is OpenVPN running?");
+            }
+            IsConnected = false;
+            return false;
         }
     }
 }
