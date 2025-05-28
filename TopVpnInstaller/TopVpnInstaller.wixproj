@@ -1,5 +1,1 @@
-﻿<Project Sdk="WixToolset.Sdk/6.0.0">
-  <ItemGroup>
-    <ProjectReference Include="..\SurfVpnClientTest1\SurfVpnClientTest1.csproj" />
-  </ItemGroup>
-</Project>
+﻿<Project Sdk="WixToolset.Sdk/6.0.0" />

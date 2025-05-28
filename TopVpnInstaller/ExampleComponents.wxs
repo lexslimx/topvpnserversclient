@@ -19,27 +19,36 @@
 		<ComponentGroup Id="ExampleComponents" Directory="MYINSTALLFOLDER">
 
 			<Component Id="AppExe" Guid="*">
-				<File Source="SurfVpnClientTest1.exe" KeyPath="yes" />
+				<File Source="..\publish\SurfVpnClientTest1.exe" KeyPath="yes" />
 			</Component>
 
-			<Component Id="AppDeps" Guid="*">
-				<File Source="SurfVpnClientTest1.deps.json" KeyPath="yes" />
+			<Component Id="PDB" Guid="*">
+				<File Source="..\publish\SurfVpnClientTest1.pdb" KeyPath="yes" />
 			</Component>
 
-			<Component Id="AppRuntimeConfig" Guid="*">
-				<File Source="SurfVpnClientTest1.runtimeconfig.json" KeyPath="yes" />
+			<Component Id="VCR" Guid="*">
+				<File Source="..\publish\vcruntime140_cor3.dll" KeyPath="yes" />
 			</Component>
 
-			<Component Id="AppDLL" Guid="*">
-				<File Source="SurfVpnClientTest1.dll" KeyPath="yes" />
+			<Component Id="WPF" Guid="*">
+				<File Source="..\publish\wpfgfx_cor3.dll" KeyPath="yes" />
 			</Component>
 
-			<Component Id="MvvmDLL" Guid="*">
-				<File Source="CommunityToolkit.Mvvm.dll" KeyPath="yes" />
+			<Component Id="Presenation" Guid="*">
+				<File Source="..\publish\PresentationNative_cor3.dll" KeyPath="yes" />
 			</Component>
 
-			<Component Id="SystemTextJson" Guid="*">
-				<File Source="System.Text.Json.dll" KeyPath="yes" />
+			<Component Id="COR3" Guid="*">
+				<File Source="..\publish\PenImc_cor3.dll" KeyPath="yes" />
+			</Component>
+
+			<Component Id="D3D" Guid="*">
+				<File Source="..\publish\D3DCompiler_47_cor3.dll" KeyPath="yes" />
+			</Component>
+
+			<!-- Icon File -->
+			<Component Id="AppIcon" Guid="*">
+				<File Id="AppIconFile" Source="..\publish\icon.ico" KeyPath="yes" />
 			</Component>
 
 			<!-- Shortcuts component -->
@@ -50,7 +59,8 @@
 						  Name="SurfVpnClientTest1"
 						  Description="Launch SurfVpnClientTest1"
 						  Target="[MYINSTALLFOLDER]SurfVpnClientTest1.exe"
-						  WorkingDirectory="MYINSTALLFOLDER" />
+						  WorkingDirectory="MYINSTALLFOLDER"
+						  Icon="AppIcon" />
 
 				<!-- Start Menu Shortcut -->
 				<Shortcut Id="StartMenuShortcut"
@@ -58,7 +68,8 @@
 						  Name="SurfVpnClientTest1"
 						  Description="Launch SurfVpnClientTest1"
 						  Target="[MYINSTALLFOLDER]SurfVpnClientTest1.exe"
-						  WorkingDirectory="MYINSTALLFOLDER" />
+						  WorkingDirectory="MYINSTALLFOLDER"
+						  Icon="AppIcon" />
 
 				<!-- Remove Start Menu folder on uninstall -->
 				<RemoveFolder Id="RemoveStartMenuFolder"
@@ -82,6 +93,11 @@
 		<Feature Id="MainFeature" Title="SurfVpnClientTest1" Level="1">
 			<ComponentGroupRef Id="ExampleComponents" />
 		</Feature>
+	</Fragment>
+
+	<!-- Declare the Icon -->
+	<Fragment>
+		<Icon Id="AppIcon" SourceFile="..\publish\icon.ico" />
 	</Fragment>
 
 </Wix>
