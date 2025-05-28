@@ -1,7 +1,6 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Package Id="TODO_Manufacturer.TopVpnInstaller" Name="TopVpnInstaller" Manufacturer="TODO Manufacturer" Version="1.0.0.0">
+  <Package Id="TODO_Manufacturer.TopVpnInstaller" Name="TopVpn" Manufacturer="Top VPN Servers" Version="1.0.0.0">
     <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
-
     <Feature Id="Main">
       <ComponentGroupRef Id="ExampleComponents" />
     </Feature>

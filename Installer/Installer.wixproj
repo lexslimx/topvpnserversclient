@@ -2,8 +2,11 @@
   <PropertyGroup>
     <OutputType>Bundle</OutputType>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="WixToolset.BootstrapperApplications.wixext" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SurfVpnClientTest1\SurfVpnClientTest1.csproj" />
+    <ProjectReference Include="..\TopVpnInstaller\TopVpnInstaller.wixproj" />
   </ItemGroup>
 </Project>
