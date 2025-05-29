@@ -13,15 +13,19 @@ namespace SurfVpnClientTest1.Services
         public List<ConnectionProfile> GetConnectionProfiles()
         {
             var connectionProfiles = new List<ConnectionProfile>();
-            var downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-            var files = System.IO.Directory.GetFiles(downloadsPath, "*.ovpn");
-            foreach (var file in files)
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var vpnProfilePath = System.IO.Path.Combine(appDataPath, "TopVpnServers");
+            if (System.IO.Directory.Exists(vpnProfilePath))
             {
-                connectionProfiles.Add(new ConnectionProfile
+                var files = System.IO.Directory.GetFiles(vpnProfilePath, "*.ovpn");
+                foreach (var file in files)
                 {
-                    Name = System.IO.Path.GetFileNameWithoutExtension(file),
-                    Path = file
-                });
+                    connectionProfiles.Add(new ConnectionProfile
+                    {
+                        Name = System.IO.Path.GetFileNameWithoutExtension(file),
+                        Path = file
+                    });
+                }
             }
             return connectionProfiles;
         }

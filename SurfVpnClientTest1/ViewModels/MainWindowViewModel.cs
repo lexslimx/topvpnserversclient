@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using SurfVpnClientTest1.Models;
 using SurfVpnClientTest1.Services;
 using System;
@@ -8,6 +9,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,8 +19,7 @@ using System.Windows.Threading;
 namespace SurfVpnClientTest1.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
-    {
-        string ovpnFilePath = @"C:\Users\alexk\Downloads\alexkm14@gmail.com-europe west.ovpn"; // Path to your .ovpn file
+    {        
         string openVpnExePath = @"C:\Program Files\OpenVPN\bin\openvpn.exe"; // Adjust this path based on your OpenVPN installation
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -39,14 +40,39 @@ namespace SurfVpnClientTest1.ViewModels
         public List<ConnectionProfile> ConnectionProfiles
         {
             get
-            {                
-              _connectionProfiles = connectionProfileService.GetConnectionProfiles();   
+            {
+                _connectionProfiles = connectionProfileService.GetConnectionProfiles();
                 return _connectionProfiles;
             }
             set
             {
-                _connectionProfiles = connectionProfileService.GetConnectionProfiles();
+                _connectionProfiles = value;
                 OnPropertyChanged(nameof(ConnectionProfiles));
+            }
+        }
+
+        public ICommand DeleteProfileCommand => new RelayCommand(DeleteProfile);
+
+        private void DeleteProfile()
+        {
+            var profile = SelectedConnectionProfile;
+            if (profile == null || string.IsNullOrEmpty(profile.Path) || !File.Exists(profile.Path))
+            {
+                Console.WriteLine("Invalid profile selected or file does not exist.");
+                ConnectionProfiles = connectionProfileService.GetConnectionProfiles(); // Refresh the list
+                return;
+            }
+            try
+            {
+                File.Delete(profile.Path);
+                ConnectionProfiles.Remove(profile);
+                SelectedConnectionProfile = null; // Clear selection after deletion
+                Console.WriteLine("Profile deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting profile: {ex.Message}");
+                throw new Exception($"Error deleting profile: {ex.Message}");
             }
         }
 
@@ -61,11 +87,6 @@ namespace SurfVpnClientTest1.ViewModels
             {
                 _selectedConnectionProfile = value;
                 OnPropertyChanged(nameof(SelectedConnectionProfile));
-                // Update the ovpnFilePath based on the selected profile
-                if (value != null)
-                {
-                    ovpnFilePath = value.Path;
-                }
             }
         }
 
@@ -86,8 +107,8 @@ namespace SurfVpnClientTest1.ViewModels
         {
             get => _isConnected;
             set
-            {            
-                if(value == _isConnected) return; // Avoid unnecessary updates
+            {
+                if (value == _isConnected) return; // Avoid unnecessary updates
                 _isConnected = value;
                 OnPropertyChanged(nameof(IsConnected));
                 OnPropertyChanged(nameof(ConnectButtonText)); // Notify UI to update button text
@@ -117,7 +138,7 @@ namespace SurfVpnClientTest1.ViewModels
                 LogsTextBlock = "Please select a valid connection profile.";
                 return;
             }
-            
+
             LogsTextBlock = "Starting OpenVPN connection...";
 
             // Start OpenVPN process
@@ -255,7 +276,8 @@ namespace SurfVpnClientTest1.ViewModels
                         {
                             if (line.Contains(">")) break;
                             // Look for a line like: >STATE,...,CONNECTED,SUCCESS,...
-                            if (line.Contains("CONNECTED,SUCCESS")) { 
+                            if (line.Contains("CONNECTED,SUCCESS"))
+                            {
                                 IsConnected = true;
                                 return true;
                             }
@@ -268,10 +290,106 @@ namespace SurfVpnClientTest1.ViewModels
             {
                 // Could not connect to management interface or parse state
                 IsConnected = false;
-                throw new InvalidOperationException("Could not determine VPN connection status. Is OpenVPN running?");
+                Console.WriteLine("Could not determine VPN connection status. Is OpenVPN running?");
             }
             IsConnected = false;
             return false;
         }
+
+        private async Task<List<string>> GetBandwidthUsageAsync()
+        {
+
+            const string host = "127.0.0.1";
+            const int port = 7505;
+            var output = new List<string>();
+
+            try
+            {
+                using TcpClient client = new TcpClient();
+                await client.ConnectAsync(host, port);
+
+                using NetworkStream stream = client.GetStream();
+                using StreamReader reader = new StreamReader(stream);
+                using StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
+
+                // Read welcome banner
+                string line;
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (line.Contains("OpenVPN")) break;
+                }
+
+                // Send bytecount command
+                await writer.WriteLineAsync("bytecount");
+
+                // Read response
+                string response = await reader.ReadLineAsync();
+
+                if (response != null && response.StartsWith("SUCCESS:"))
+                {
+                    Console.WriteLine(response);
+
+                    // Parse values
+                    var parts = response.Split(' ');
+                    if (parts.Length >= 6 &&
+                        long.TryParse(parts[2], out long rxBytes) &&
+                        long.TryParse(parts[5], out long txBytes))
+                    {
+                        Console.WriteLine($"RX: {rxBytes} bytes");
+                        Console.WriteLine($"TX: {txBytes} bytes");
+
+                        output.Add($"RX: {rxBytes} bytes");
+                        output.Add($"TX: {txBytes} bytes");
+                    }
+                }
+
+                // Exit
+                await writer.WriteLineAsync("quit");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return output;
+        }
+
+
+        public ICommand ImportProfileCommand => new RelayCommand(ImportOvpnProfile);
+        public void ImportOvpnProfile()
+        {
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "OpenVPN Config (*.ovpn)|*.ovpn",
+                Title = "Select OpenVPN Profile"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string selectedFile = openFileDialog.FileName;
+                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string vpnProfilePath = Path.Combine(appDataPath, "TopVpnServers");
+
+                try
+                {
+                    // Ensure the folder exists
+                    Directory.CreateDirectory(vpnProfilePath);
+
+                    string destFile = Path.Combine(vpnProfilePath, Path.GetFileName(selectedFile));
+                    File.Copy(selectedFile, destFile, overwrite: true);
+
+                    LogsTextBlock = $"Profile imported: {destFile}";
+
+                    ConnectionProfiles = connectionProfileService.GetConnectionProfiles();
+                    SelectedConnectionProfile = ConnectionProfiles.FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    LogsTextBlock = $"Error importing profile: {ex.Message}";
+                }
+            }
+        }
     }
+    
+    
 }
