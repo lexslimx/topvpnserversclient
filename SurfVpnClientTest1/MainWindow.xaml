@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SurfVpnClientTest1.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" MaxHeight="500" MaxWidth="350" MinHeight="500" MinWidth="350" Background="#FFA2CDE8">
+        Title="Top Vpn Servers" MaxHeight="500" MaxWidth="350" MinHeight="500" MinWidth="350" Background="#FFA2CDE8">
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
