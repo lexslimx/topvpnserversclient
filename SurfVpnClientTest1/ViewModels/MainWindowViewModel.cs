@@ -31,7 +31,8 @@ namespace SurfVpnClientTest1.ViewModels
         {
             ConnectCommand = new RelayCommand(Connect, CanConnect);
             connectionProfileService = new ConnectionProfileService();
-            IsVpnConnected();
+            var connected = IsVpnConnected();
+            ConnectButtonText = connected ? "Connected" : "Disconnected";            
         }
 
         public ICommand ConnectCommand { get; private set; }
@@ -76,7 +77,19 @@ namespace SurfVpnClientTest1.ViewModels
             }
         }
 
-        public string ConnectButtonText => IsConnected == true ? "Disconnect" : "Connect";
+        private string _connectButtonText;
+        public string ConnectButtonText
+        {
+            get => _connectButtonText;
+            set
+            {
+                if (_connectButtonText != value)
+                {
+                    _connectButtonText = value;
+                    OnPropertyChanged(nameof(ConnectButtonText));
+                }
+            }
+        }
 
         // Intorduce property SelectedConnectionProfile
         private ConnectionProfile _selectedConnectionProfile;
@@ -107,11 +120,10 @@ namespace SurfVpnClientTest1.ViewModels
         {
             get => _isConnected;
             set
-            {
-                if (value == _isConnected) return; // Avoid unnecessary updates
+            {                
                 _isConnected = value;
                 OnPropertyChanged(nameof(IsConnected));
-                OnPropertyChanged(nameof(ConnectButtonText)); // Notify UI to update button text
+                ConnectButtonText = _isConnected ? "Disconnect" : "Connect";
             }
         }
 
@@ -130,6 +142,7 @@ namespace SurfVpnClientTest1.ViewModels
             if (IsVpnConnected())
             {
                 Disconnect();
+                return;
             }
 
             // CHeck if the selected connection profile is null or empty
@@ -167,6 +180,9 @@ namespace SurfVpnClientTest1.ViewModels
             openVpnProcess.BeginOutputReadLine();
             openVpnProcess.BeginErrorReadLine();
 
+            ConnectionStatus = "Connected";
+            IsConnected = true;
+
             // Wait for the process to exit
             await openVpnProcess.WaitForExitAsync();
 
@@ -181,9 +197,9 @@ namespace SurfVpnClientTest1.ViewModels
             }
             else
             {
-                MessageBox.Show("Connected to VPN successfully.");
-                ConnectionStatus = "Connected";
-                IsConnected = true;
+                Console.WriteLine("Connected to VPN successfully.");
+                ConnectionStatus = "Disconnected";
+                IsConnected = false;
             }
         }
 
@@ -243,6 +259,7 @@ namespace SurfVpnClientTest1.ViewModels
             {
                 LogsTextBlock = $"Error disconnecting: {ex.Message}";
                 IsConnected = false;
+                ConnectionStatus = "Disconnected";
                 throw new Exception(ex.Message);
             }
         }
@@ -277,8 +294,7 @@ namespace SurfVpnClientTest1.ViewModels
                             if (line.Contains(">")) break;
                             // Look for a line like: >STATE,...,CONNECTED,SUCCESS,...
                             if (line.Contains("CONNECTED,SUCCESS"))
-                            {
-                                IsConnected = true;
+                            {                                
                                 return true;
                             }
                         }
@@ -287,12 +303,9 @@ namespace SurfVpnClientTest1.ViewModels
                 }
             }
             catch
-            {
-                // Could not connect to management interface or parse state
-                IsConnected = false;
+            {                                
                 Console.WriteLine("Could not determine VPN connection status. Is OpenVPN running?");
-            }
-            IsConnected = false;
+            }            
             return false;
         }
 
