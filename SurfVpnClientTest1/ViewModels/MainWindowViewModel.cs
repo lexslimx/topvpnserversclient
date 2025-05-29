@@ -20,7 +20,7 @@ namespace SurfVpnClientTest1.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {        
-        string openVpnExePath = @"C:\Program Files\OpenVPN\bin\openvpn.exe"; // Adjust this path based on your OpenVPN installation
+        string openVpnExePath = @"C:\Program Files\OpenVPN\bin\openvpn.exe";
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
