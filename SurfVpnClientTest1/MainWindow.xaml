@@ -43,7 +43,7 @@
             <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Margin="0,5,0,5">
                 Subscription:
             </Label>
-            <TextBox Grid.Column="1" x:Name="SubscriptionText" Text="FREE" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="16" IsReadOnly="True" Margin="0,5,0,5"/>
+            <TextBox Grid.Column="1" Visibility="Hidden" x:Name="SubscriptionText" Text="FREE" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="16" IsReadOnly="True" Margin="0,5,0,5"/>
         </Grid>
 
         <!-- Profile Button -->        
@@ -85,8 +85,8 @@
 
         <!-- Connect Button -->
         <Button Grid.Row="4" Grid.ColumnSpan="3" Content="{Binding ConnectButtonText, Mode=OneWay}" 
-            FontSize="16"             
-            Background="#007ACC" 
+            FontSize="16"            
+            Background="#007ACC"
             Foreground="White" 
             BorderBrush="Transparent" 
             VerticalAlignment="Stretch" 

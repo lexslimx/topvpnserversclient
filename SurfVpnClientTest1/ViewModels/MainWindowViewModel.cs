@@ -32,7 +32,7 @@ namespace SurfVpnClientTest1.ViewModels
             ConnectCommand = new RelayCommand(Connect, CanConnect);
             connectionProfileService = new ConnectionProfileService();
             var connected = IsVpnConnected();
-            ConnectButtonText = connected ? "Connected" : "Disconnected";            
+            ConnectButtonText = connected ? "Disconnect" : "Connect";
         }
 
         public ICommand ConnectCommand { get; private set; }
