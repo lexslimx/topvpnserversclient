@@ -48,7 +48,7 @@
 
         <!-- Profile Button -->        
         <Button Grid.Row="1" Grid.Column="2" Content="Save"         
-         
+            Visibility="Hidden"
             Foreground="#007ACC" 
             BorderBrush="Transparent" 
             FontWeight="Bold" 
@@ -57,7 +57,7 @@
 
         <!-- Server Selection -->
         <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Margin="0,5,0,5">
-            select a server:
+            Select a server:
         </Label>
         <ComboBox Grid.Row="3" Grid.ColumnSpan="1" Name="ServersDropDown"
                   VerticalAlignment="Center"
@@ -106,7 +106,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                     <TextBlock Text="Subscription Expiry:" FontWeight="SemiBold" Width="120"/>
-                    <TextBlock x:Name="AccountEndDate" Text="12/12/2025 00:00:00"/>
+                    <TextBlock Visibility="Hidden" x:Name="AccountEndDate" Text="12/12/2026 00:00:00"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                     <TextBlock Text="Activity" FontWeight="SemiBold" Width="120"/>
