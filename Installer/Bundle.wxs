@@ -1,7 +1,7 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
-  <Bundle Id="TODO_Manufacturer.Installer" Name="TopVpnInstaller" Manufacturer="TopVpnServers" Version="1.0.0.0">
+  <Bundle Id="TODO_Manufacturer.Installer" Name="Top Vpn Installer" Manufacturer="TopVpnServers" Version="1.0.0.0">
     <BootstrapperApplication>
-      <bal:WixStandardBootstrapperApplication LicenseUrl="https://www.example.com/license" Theme="hyperlinkLicense" />
+      <bal:WixStandardBootstrapperApplication LicenseUrl="https://www.topvpnservers.com/license" Theme="hyperlinkLicense" />
     </BootstrapperApplication>
 	  <Chain>
 		  <MsiPackage SourceFile="C:\Users\alexk\Downloads\Programs\OpenVPN-2.6.14-I001-amd64.msi" />
