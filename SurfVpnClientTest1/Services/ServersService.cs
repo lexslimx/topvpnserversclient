@@ -18,7 +18,7 @@ namespace SurfVpnClientTest1.Services
 
         public async Task<List<ClientServer>> GetServersAsync(int subscriptionId)
         {
-            var url = $"https://localhost:7295/api/server?subscriptionId={subscriptionId}";
+            var url = $"https://www.topvpnservers.com/api/server?subscriptionId={subscriptionId}";
             try
             {
                 var response = await _httpClient.GetAsync(url);

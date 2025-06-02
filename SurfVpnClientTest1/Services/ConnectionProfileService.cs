@@ -47,7 +47,7 @@ namespace SurfVpnClientTest1.Services
                 System.IO.Directory.CreateDirectory(vpnProfilePath);
             }
 
-            var url = $"https://localhost:7295/api/profile?subscriptionId={subscriptionId}&ipaddress={ipaddress}";
+            var url = $"https://www.topvpnservers.com/api/profile?subscriptionId={subscriptionId}&ipaddress={ipaddress}";
             try
             {
                 var response = await _httpClient.GetAsync(url);

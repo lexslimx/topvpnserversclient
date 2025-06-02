@@ -5,121 +5,170 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SurfVpnClientTest1.ViewModels"
         mc:Ignorable="d"
-        Title="Top Vpn Servers" MaxHeight="500" MaxWidth="350" MinHeight="500" MinWidth="350" Background="#FFA2CDE8">
+        Title="Top Vpn Servers" MaxHeight="500" MaxWidth="350" MinHeight="500" MinWidth="350"
+        Background="#23242A" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True">
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
-    <Grid Background="#F0F0F0" Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="60"></RowDefinition>
-            <RowDefinition Height="40"></RowDefinition>
-            <RowDefinition Height="40"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="30"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="70*"></ColumnDefinition>
-            <ColumnDefinition Width="10*"></ColumnDefinition>
-            <ColumnDefinition Width="10*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-
-        <!-- Header -->
-        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#007ACC" CornerRadius="0" Margin="0,0,0,10">
-            <Label Content="Top Vpn Servers" 
-               VerticalAlignment="Center" 
-               HorizontalAlignment="Center" 
-               FontSize="25" 
-               Foreground="White" 
-               FontWeight="Bold" />
-        </Border>
-
-        <!-- Welcome Text -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="3">
+    <Border Background="#23242A" CornerRadius="16" Padding="0" BorderBrush="#333" BorderThickness="1">
+        <Grid Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="90"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="50"></ColumnDefinition>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Margin="0,5,0,5">
-                Subscription Id:
-            </Label>
-            <TextBox Grid.Column="1" x:Name="SubscriptionText" Text="{Binding SubscriptionId}" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="16" Margin="0,5,0,5"/>
-            <Button Margin="0,8,5,8" Grid.Column="2"
-                    Command="{Binding UpdateSubscriptionCommand}"                    
-                    >
-                Save
-            </Button>
-        </Grid>
 
-        <!-- Profile Button -->        
-        <Button Grid.Row="1" Grid.Column="2" Content="Save"         
-            Visibility="Hidden"
-            Foreground="#007ACC" 
-            BorderBrush="Transparent" 
-            FontWeight="Bold" 
-            VerticalAlignment="Center" 
-            HorizontalAlignment="Right"/>
-
-        <!-- Server Selection -->
-        <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Margin="0,5,0,5">
-            Select a server:
-        </Label>
-        <ComboBox Grid.Row="3" Grid.ColumnSpan="1" Name="ServersDropDown"
-                  VerticalAlignment="Center"
-                  HorizontalAlignment="Stretch"
-                  FontSize="16"
-                  Margin="5,5,0,5"
-                  ItemsSource="{Binding ConnectionProfiles, Mode=OneWay}"
-                  SelectedItem="{Binding SelectedConnectionProfile, Mode=TwoWay}"
-                  DisplayMemberPath="Name">
-        </ComboBox>
-
-        <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Content="Refresh"                                        
-            FontWeight="Bold"             
-            VerticalAlignment="Center" 
-            HorizontalAlignment="Center"
-            Command="{Binding ReloadProfilesCommand}"
-                />
-
-        <!-- Connect Button -->
-        <Button Grid.Row="4" Grid.ColumnSpan="3" Content="{Binding ConnectButtonText, Mode=OneWay}" 
-            FontSize="16"     
-                Margin="5,0,5,0"
-            Background="#007ACC"
-            Foreground="White" 
-            BorderBrush="Transparent" 
-            VerticalAlignment="Stretch" 
-            HorizontalAlignment="Stretch"
-            Command="{Binding ConnectCommand}">
-        </Button>
-
-
-        <!-- Statistics Panel -->
-        <Border Grid.Row="5" Grid.ColumnSpan="3"  BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="10"
-                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0">
-            <StackPanel>
-                <TextBlock Text="Statistics" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="Connection Status:" FontWeight="SemiBold" Width="120"/>
-                    <TextBlock x:Name="ConnectionStatus" Text="{Binding ConnectionStatus,Mode=OneWay}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="Subscription Expiry:" FontWeight="SemiBold" Width="120"/>
-                    <TextBlock Visibility="Hidden" x:Name="AccountEndDate" Text="12/12/2026 00:00:00"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="Activity" FontWeight="SemiBold" Width="120"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Stretch" Height="103">
-                    <TextBlock x:Name="LogsTextBlock" Text="{Binding LogsTextBlock,Mode=OneWay}" TextWrapping="Wrap"  HorizontalAlignment="Stretch"/>
-                </StackPanel>
+            <!-- Header with Icon -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,0">
+                <Viewbox Height="48" Width="48" Margin="0,0,10,0">
+                    <Canvas>
+                        <Ellipse Width="48" Height="48" Stroke="#FFF" StrokeThickness="2"/>
+                        <Ellipse Width="36" Height="36" Stroke="#FFF" StrokeThickness="2" Canvas.Left="6" Canvas.Top="6"/>
+                        <Line X1="24" Y1="0" X2="24" Y2="48" Stroke="#FFF" StrokeThickness="2"/>
+                        <Line X1="0" Y1="24" X2="48" Y2="24" Stroke="#FFF" StrokeThickness="2"/>
+                    </Canvas>
+                </Viewbox>
+                <Label Content="Top Vpn Servers"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       FontSize="28"
+                       Foreground="White"
+                       FontWeight="Bold"
+                       Padding="0"
+                       Margin="0,0,0,0"/>
             </StackPanel>
-        </Border>
 
+            <!-- Subscription Section -->
+            <StackPanel Grid.Row="1" Margin="24,0,24,0" VerticalAlignment="Top">
+                <TextBlock Text="SUBSCRIPTION:" Foreground="#B0B0B0" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,5"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0"
+                             x:Name="SubscriptionText"
+                             Text="{Binding SubscriptionId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Background="#292A30"
+                             Foreground="White"
+                             BorderBrush="#393A40"
+                             BorderThickness="1"
+                             FontSize="16"
+                             Padding="10,4"
+                             Margin="0,0,8,0"
+                             Height="36"
+                             VerticalContentAlignment="Center"
+                             HorizontalContentAlignment="Left"
+                             Style="{x:Null}"/>
+                    <Button Grid.Column="1"
+                            Content="Save"
+                            Command="{Binding UpdateSubscriptionCommand}"
+                            Background="#393A40"
+                            Foreground="White"
+                            BorderBrush="#393A40"
+                            BorderThickness="1"
+                            FontWeight="SemiBold"
+                            Padding="16,0"
+                            Height="36"
+                            Margin="0,0,0,0"
+                            Cursor="Hand"/>
+                </Grid>
+            </StackPanel>
 
-    </Grid>
+            <!-- Server Selection and Actions -->
+            <StackPanel Grid.Row="2" Margin="24,10,24,0" Orientation="Horizontal" VerticalAlignment="Top" Height="40">
+                <ComboBox Name="ServersDropDown"
+                          ItemsSource="{Binding ConnectionProfiles, Mode=OneWay}"
+                          SelectedItem="{Binding SelectedConnectionProfile, Mode=TwoWay}"
+                          DisplayMemberPath="Name"
+                          Background="#292A30"
+                          Foreground="White"
+                          BorderBrush="#393A40"
+                          BorderThickness="1"
+                          FontSize="16"
+                          Padding="10,2"
+                          Height="36"
+                          MinWidth="120"
+                          Margin="0,0,8,0"
+                          VerticalContentAlignment="Center"
+                          HorizontalContentAlignment="Left"/>
+                <Button Content="Add"
+                        Command="{Binding ImportProfileCommand}"
+                        Background="#393A40"
+                        Foreground="White"
+                        BorderBrush="#393A40"
+                        BorderThickness="1"
+                        FontWeight="SemiBold"
+                        Padding="12,0"
+                        Height="36"
+                        Margin="0,0,8,0"
+                        Cursor="Hand"/>
+                <Button Content="Del"
+                        Command="{Binding DeleteProfileCommand}"
+                        Background="#393A40"
+                        Foreground="White"
+                        BorderBrush="#393A40"
+                        BorderThickness="1"
+                        FontWeight="SemiBold"
+                        Padding="12,0"
+                        Height="36"
+                        Margin="0,0,8,0"
+                        Cursor="Hand"/>
+                <Button Content="Refresh"
+                        Command="{Binding ReloadProfilesCommand}"
+                        Background="#393A40"
+                        Foreground="White"
+                        BorderBrush="#393A40"
+                        BorderThickness="1"
+                        FontWeight="SemiBold"
+                        Padding="12,0"
+                        Height="36"
+                        Cursor="Hand"/>
+            </StackPanel>
+
+            <!-- Connect Button -->
+            <Button Grid.Row="3"
+                    Content="{Binding ConnectButtonText, Mode=OneWay}"
+                    FontSize="18"
+                    Margin="24,16,24,0"
+                    Background="#007ACC"
+                    Foreground="White"
+                    BorderBrush="#007ACC"
+                    BorderThickness="0"
+                    Height="44"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    FontWeight="Bold"
+                    Command="{Binding ConnectCommand}"
+                    Cursor="Hand"
+                    />
+
+            <!-- Statistics Panel -->
+            <StackPanel Grid.Row="4" Margin="24,16,24,24" Background="#23242A">
+                <Separator Margin="0,0,0,16" Background="#393A40" Height="1"/>
+                <TextBlock Text="STATISTICS" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <TextBlock Text="Connection Status:" FontWeight="SemiBold" Width="140" Foreground="#B0B0B0"/>
+                    <TextBlock x:Name="ConnectionStatus" Text="{Binding ConnectionStatus,Mode=OneWay}" Foreground="White"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <TextBlock Text="Subscription Expiry:" FontWeight="SemiBold" Width="140" Foreground="#B0B0B0"/>
+                    <TextBlock Visibility="Hidden" x:Name="AccountEndDate" Text="12/12/2026 00:00:00" Foreground="White"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <TextBlock Text="Activity" FontWeight="SemiBold" Width="140" Foreground="#B0B0B0"/>
+                </StackPanel>
+                <Border Background="#292A30" CornerRadius="6" Margin="0,10,0,0" Padding="8">
+                    <TextBlock x:Name="LogsTextBlock" Text="{Binding LogsTextBlock,Mode=OneWay}" TextWrapping="Wrap" HorizontalAlignment="Stretch" Foreground="White"/>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>
 
 
-    
