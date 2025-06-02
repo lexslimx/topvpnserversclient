@@ -74,5 +74,12 @@ namespace SurfVpnClientTest1
         {
             
         }
+
+        private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // Allow dragging the window from anywhere
+            if (e.ButtonState == System.Windows.Input.MouseButtonState.Pressed)
+                this.DragMove();
+        }
     }
 }
