@@ -86,7 +86,7 @@
                           SelectedItem="{Binding SelectedConnectionProfile, Mode=TwoWay}"
                           DisplayMemberPath="Name"
                           Background="#292A30"
-                          Foreground="White"
+                          Foreground="#292A30"
                           BorderBrush="#393A40"
                           BorderThickness="1"
                           FontSize="16"
