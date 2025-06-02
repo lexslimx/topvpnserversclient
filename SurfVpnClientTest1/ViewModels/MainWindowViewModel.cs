@@ -71,6 +71,7 @@ namespace SurfVpnClientTest1.ViewModels
                             Path = profilePath
                         });
                     }
+                    SelectedConnectionProfile = ConnectionProfiles.FirstOrDefault();
                 }
                 catch (Exception ex)
                 {
@@ -530,7 +531,7 @@ namespace SurfVpnClientTest1.ViewModels
             catch
             {
                 // Optionally handle or log error
-                throw new Exception("Error reading subscription ID from settings file.");
+                Console.WriteLine("Error reading subscription ID from settings file.");                
             }
             return string.Empty;
         }
