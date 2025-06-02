@@ -4,6 +4,7 @@ using SurfVpnClientTest1.Models;
 using SurfVpnClientTest1.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Text.Json;
 
 namespace SurfVpnClientTest1.ViewModels
 {
@@ -33,22 +35,77 @@ namespace SurfVpnClientTest1.ViewModels
             connectionProfileService = new ConnectionProfileService();
             var connected = IsVpnConnected();
             ConnectButtonText = connected ? "Disconnect" : "Connect";
+            InitializeSettingsFile();
+            SubscriptionId = GetSubscriptionId();
+            // Change the constructor to call the async method without 'await'
+            GetProfilesFromApiAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    LogsTextBlock = "Error fetching profiles: " + task.Exception?.Message;
+                }
+                else
+                {
+                    GetProfilesFromDirectory();
+                }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private async Task GetProfilesFromApiAsync()
+        {
+            ServersService serversService = new ServersService();
+            string subscriptionId = GetSubscriptionId();
+            List<ClientServer> clientServers = await serversService.GetServersAsync(int.Parse(subscriptionId));
+
+            // For each IP address, download the profile and add it to the connection profiles list
+            foreach (var clientServer in clientServers)
+            {
+                try
+                {
+                    var profilePath = await connectionProfileService.DownloadProfileAsync(208, clientServer.IpAddress, clientServer.Region);
+                    if (!string.IsNullOrEmpty(profilePath))
+                    {
+                        ConnectionProfiles.Add(new ConnectionProfile
+                        {
+                            Name = Path.GetFileNameWithoutExtension(profilePath),
+                            Path = profilePath
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogsTextBlock += $"Error downloading profile for {clientServer}: {ex.Message}\n";
+                    throw new Exception($"Error downloading profile for {clientServer}: {ex.Message}");
+                }
+            }
         }
 
         public ICommand ConnectCommand { get; private set; }
 
-        private List<ConnectionProfile> _connectionProfiles;
-        public List<ConnectionProfile> ConnectionProfiles
+        private ObservableCollection<ConnectionProfile> _connectionProfiles = new ObservableCollection<ConnectionProfile>();
+        public ObservableCollection<ConnectionProfile> ConnectionProfiles
         {
-            get
-            {
-                _connectionProfiles = connectionProfileService.GetConnectionProfiles();
-                return _connectionProfiles;
-            }
+            get => _connectionProfiles;
             set
             {
                 _connectionProfiles = value;
                 OnPropertyChanged(nameof(ConnectionProfiles));
+            }
+        }
+
+        public ICommand ReloadProfilesCommand => new RelayCommand(() => GetProfilesFromApiAsync().ConfigureAwait(false));
+        public void GetProfilesFromDirectory()
+        {
+            try
+            {
+                ConnectionProfiles = new ObservableCollection<ConnectionProfile>(connectionProfileService.GetConnectionProfiles());
+                SelectedConnectionProfile = ConnectionProfiles.FirstOrDefault();
+                LogsTextBlock = "Profiles reloaded successfully.";
+            }
+            catch (Exception ex)
+            {
+                LogsTextBlock = $"Error reloading profiles: {ex.Message}";
+                throw new Exception($"Error reloading profiles: {ex.Message}");
             }
         }
 
@@ -59,15 +116,15 @@ namespace SurfVpnClientTest1.ViewModels
             var profile = SelectedConnectionProfile;
             if (profile == null || string.IsNullOrEmpty(profile.Path) || !File.Exists(profile.Path))
             {
-                Console.WriteLine("Invalid profile selected or file does not exist.");
-                ConnectionProfiles = connectionProfileService.GetConnectionProfiles(); // Refresh the list
+                Console.WriteLine("Invalid profile selected or file does not exist.");               
+                ConnectionProfiles = new ObservableCollection<ConnectionProfile>(connectionProfileService.GetConnectionProfiles()); // Refresh the list
                 return;
             }
             try
             {
                 File.Delete(profile.Path);
                 ConnectionProfiles.Remove(profile);
-                SelectedConnectionProfile = null; // Clear selection after deletion
+                SelectedConnectionProfile = ConnectionProfiles.FirstOrDefault(); 
                 Console.WriteLine("Profile deleted successfully.");
             }
             catch (Exception ex)
@@ -393,7 +450,7 @@ namespace SurfVpnClientTest1.ViewModels
 
                     LogsTextBlock = $"Profile imported: {destFile}";
 
-                    ConnectionProfiles = connectionProfileService.GetConnectionProfiles();
+                    ConnectionProfiles = new ObservableCollection<ConnectionProfile>(connectionProfileService.GetConnectionProfiles());
                     SelectedConnectionProfile = ConnectionProfiles.FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -401,8 +458,81 @@ namespace SurfVpnClientTest1.ViewModels
                     LogsTextBlock = $"Error importing profile: {ex.Message}";
                 }
             }
+        }        
+
+        public void InitializeSettingsFile()
+        {
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string settingsPath = Path.Combine(appDataPath, "TopVpnServers", "topvpnserversettings.json");
+
+            // Ensure the directory exists
+            Directory.CreateDirectory(Path.GetDirectoryName(settingsPath)!);
+
+            if (!File.Exists(settingsPath))
+            {
+                var settings = new { subscriptionId = 0 };
+                string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(settingsPath, json);
+            }
         }
-    }
-    
-    
+
+        private string _subscriptionId;
+        public string SubscriptionId
+        {
+            get => _subscriptionId;
+            set
+            {
+                if (_subscriptionId != value)
+                {
+                    _subscriptionId = value;
+                    OnPropertyChanged(nameof(SubscriptionId));                    
+                }
+            }
+        }
+        // Update the property to use an Action instead of a Task for the RelayCommand
+        public RelayCommand UpdateSubscriptionCommand => new RelayCommand(() => SaveSubscriptionIdAsync().ConfigureAwait(false));
+
+        private async Task SaveSubscriptionIdAsync()
+        {
+
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string settingsPath = Path.Combine(appDataPath, "TopVpnServers", "topvpnserversettings.json");
+
+            // Ensure the directory exists
+            Directory.CreateDirectory(Path.GetDirectoryName(settingsPath)!);
+
+            var settings = new { subscriptionId = SubscriptionId };
+            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(settingsPath, json);
+
+            // On subscriptionUpdate, Get profiles
+            connectionProfileService.DeleteAllProfiles();
+            await GetProfilesFromApiAsync();
+        }
+
+        public string GetSubscriptionId()
+        {
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string settingsPath = Path.Combine(appDataPath, "TopVpnServers", "topvpnserversettings.json");
+
+            if (!File.Exists(settingsPath))
+                return string.Empty;
+
+            try
+            {
+                string json = File.ReadAllText(settingsPath);
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("subscriptionId", out var subIdElement))
+                {
+                    return subIdElement.GetString() ?? subIdElement.GetRawText();
+                }
+            }
+            catch
+            {
+                // Optionally handle or log error
+                throw new Exception("Error reading subscription ID from settings file.");
+            }
+            return string.Empty;
+        }
+    }        
 }

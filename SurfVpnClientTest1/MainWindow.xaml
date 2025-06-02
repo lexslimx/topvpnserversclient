@@ -25,7 +25,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#007ACC" CornerRadius="10" Margin="0,0,0,10">
+        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#007ACC" CornerRadius="0" Margin="0,0,0,10">
             <Label Content="Top Vpn Servers" 
                VerticalAlignment="Center" 
                HorizontalAlignment="Center" 
@@ -35,15 +35,21 @@
         </Border>
 
         <!-- Welcome Text -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="50"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Margin="0,5,0,5">
-                Subscription:
+                Subscription Id:
             </Label>
-            <TextBox Grid.Column="1" Visibility="Hidden" x:Name="SubscriptionText" Text="FREE" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="16" IsReadOnly="True" Margin="0,5,0,5"/>
+            <TextBox Grid.Column="1" x:Name="SubscriptionText" Text="{Binding SubscriptionId}" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="16" Margin="0,5,0,5"/>
+            <Button Margin="0,8,5,8" Grid.Column="2"
+                    Command="{Binding UpdateSubscriptionCommand}"                    
+                    >
+                Save
+            </Button>
         </Grid>
 
         <!-- Profile Button -->        
@@ -63,29 +69,23 @@
                   VerticalAlignment="Center"
                   HorizontalAlignment="Stretch"
                   FontSize="16"
-                  Margin="0,5,0,5"
+                  Margin="5,5,0,5"
                   ItemsSource="{Binding ConnectionProfiles, Mode=OneWay}"
                   SelectedItem="{Binding SelectedConnectionProfile, Mode=TwoWay}"
                   DisplayMemberPath="Name">
         </ComboBox>
 
-        <Button Grid.Row="3" Grid.Column="1" Content="Add"                                        
+        <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Content="Refresh"                                        
             FontWeight="Bold"             
             VerticalAlignment="Center" 
             HorizontalAlignment="Center"
-            Command="{Binding ImportProfileCommand}"
-                />
-
-        <Button Grid.Row="3" Grid.Column="2" Content="Del"                                        
-            FontWeight="Bold"             
-            VerticalAlignment="Center" 
-            HorizontalAlignment="Center"
-            Command="{Binding DeleteProfileCommand}"
+            Command="{Binding ReloadProfilesCommand}"
                 />
 
         <!-- Connect Button -->
         <Button Grid.Row="4" Grid.ColumnSpan="3" Content="{Binding ConnectButtonText, Mode=OneWay}" 
-            FontSize="16"            
+            FontSize="16"     
+                Margin="5,0,5,0"
             Background="#007ACC"
             Foreground="White" 
             BorderBrush="Transparent" 
