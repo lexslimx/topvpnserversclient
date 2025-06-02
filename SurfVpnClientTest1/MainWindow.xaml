@@ -24,23 +24,21 @@
             </Grid.ColumnDefinitions>
 
             <!-- Header with Icon -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,0">
-                <Viewbox Height="48" Width="48" Margin="0,0,10,0">
-                    <Canvas>
-                        <Ellipse Width="48" Height="48" Stroke="#FFF" StrokeThickness="2"/>
-                        <Ellipse Width="36" Height="36" Stroke="#FFF" StrokeThickness="2" Canvas.Left="6" Canvas.Top="6"/>
-                        <Line X1="24" Y1="0" X2="24" Y2="48" Stroke="#FFF" StrokeThickness="2"/>
-                        <Line X1="0" Y1="24" X2="48" Y2="24" Stroke="#FFF" StrokeThickness="2"/>
-                    </Canvas>
-                </Viewbox>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,30,0,0" Width="300">
+                <Image Source="icon.ico"
+                       Width="32"
+                       Height="32"
+                       Margin="0,0,0,0"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"/>
                 <Label Content="Top Vpn Servers"
                        VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
+                       HorizontalAlignment="Right"
                        FontSize="28"
                        Foreground="White"
                        FontWeight="Bold"
                        Padding="0"
-                       Margin="0,0,0,0"/>
+                       Margin="10,0,0,0"/>
             </StackPanel>
 
             <!-- Subscription Section -->
