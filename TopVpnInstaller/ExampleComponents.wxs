@@ -48,7 +48,7 @@
 
 			<!-- Icon File -->
 			<Component Id="AppIcon" Guid="*">
-				<File Id="AppIconFile" Source="..\publish\icon.ico" KeyPath="yes" />
+				<File Id="AppIconFile" Source=".\icon.ico" KeyPath="yes" />
 			</Component>
 
 			<!-- Shortcuts component -->
@@ -97,7 +97,7 @@
 
 	<!-- Declare the Icon -->
 	<Fragment>
-		<Icon Id="AppIcon" SourceFile="..\publish\icon.ico" />
+		<Icon Id="AppIcon" SourceFile=".\icon.ico" />
 	</Fragment>
 
 </Wix>
