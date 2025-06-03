@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SurfVpnClientTest1.ViewModels"
         mc:Ignorable="d"
-        Title="Top Vpn Servers" MaxHeight="500" MaxWidth="350" MinHeight="500" MinWidth="350"
+        Title="Top Vpn Servers" MaxHeight="525" MaxWidth="350" MinHeight="525" MinWidth="350"
         Background="#23242A" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow"  AllowsTransparency="False"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.DataContext>
@@ -101,6 +101,7 @@
                         Background="#393A40"
                         Foreground="White"
                         BorderBrush="#393A40"
+                        HorizontalContentAlignment="Left"
                         BorderThickness="1"
                         FontWeight="SemiBold"
                         Padding="12,0"
@@ -141,7 +142,7 @@
                     <TextBlock Text="Activity" FontWeight="SemiBold" Width="140" Foreground="#B0B0B0"/>
                 </StackPanel>
                 <Border Background="#292A30" CornerRadius="6" Margin="0,10,0,0" Padding="8">
-                    <TextBlock x:Name="LogsTextBlock" Text="{Binding LogsTextBlock,Mode=OneWay}" TextWrapping="Wrap" HorizontalAlignment="Stretch" Foreground="White"/>
+                    <TextBlock x:Name="LogsTextBlock" Text="{Binding LogsTextBlock,Mode=OneWay}" TextWrapping="Wrap" Foreground="White" Height="55"/>
                 </Border>
             </StackPanel>
         </Grid>
