@@ -6,7 +6,7 @@
         xmlns:vm="clr-namespace:SurfVpnClientTest1.ViewModels"
         mc:Ignorable="d"
         Title="Top Vpn Servers" MaxHeight="500" MaxWidth="350" MinHeight="500" MinWidth="350"
-        Background="#23242A" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True"
+        Background="#23242A" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow"  AllowsTransparency="False"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.DataContext>
         <vm:MainWindowViewModel />
@@ -26,7 +26,7 @@
 
             <!-- Header with Icon -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,30,0,0" Width="300">
-                <Image Source="icon.ico"
+                <Image Source="pack://application:,,,/icon.ico"
                        Width="32"
                        Height="32"
                        Margin="0,0,0,0"
