@@ -533,15 +533,14 @@ namespace SurfVpnClientTest1.ViewModels
             {
                 string json = File.ReadAllText(settingsPath);
                 using var doc = JsonDocument.Parse(json);
-                if (doc.RootElement.TryGetProperty("subscriptionId", out var subIdElement))
-                {
-                    return subIdElement.GetString() ?? subIdElement.GetRawText();
-                }
+                // Convert to SettingsFileModel
+                var settingsFile = System.Text.Json.JsonSerializer.Deserialize<SettingsFileModel>(json);
+                return settingsFile?.subscriptionId.ToString() ?? "0";  
             }
             catch
             {
                 // Optionally handle or log error
-                Console.WriteLine("Error reading subscription ID from settings file.");                
+                Console.WriteLine("Error reading subscription ID from settings file.");              
             }
             return string.Empty;
         }
