@@ -38,17 +38,24 @@ namespace SurfVpnClientTest1.ViewModels
             InitializeSettingsFile();
             SubscriptionId = GetSubscriptionId();
             // Change the constructor to call the async method without 'await'
-            GetProfilesFromApiAsync().ContinueWith(task =>
+            if (!IsClientInitialized())
             {
-                if (task.IsFaulted)
+                GetProfilesFromApiAsync().ContinueWith(task =>
                 {
-                    LogsTextBlock = "Error fetching profiles: " + task.Exception?.Message;
-                }
-                else
-                {
-                    GetProfilesFromDirectory();
-                }
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+                    if (task.IsFaulted)
+                    {
+                        LogsTextBlock = "Error downloading profiles, connect to the internet and press refresh: " + task.Exception?.Message;
+                    }
+                    else
+                    {
+                        GetProfilesFromDirectory();
+                    }
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+            }
+            else
+            {
+                GetProfilesFromDirectory();
+            }
         }
 
         private async Task GetProfilesFromApiAsync()
@@ -56,6 +63,8 @@ namespace SurfVpnClientTest1.ViewModels
             ServersService serversService = new ServersService();
             string subscriptionId = GetSubscriptionId();
             List<ClientServer> clientServers = await serversService.GetServersAsync(int.Parse(subscriptionId));
+
+            if (clientServers == null) return;
 
             // For each IP address, download the profile and add it to the connection profiles list
             foreach (var clientServer in clientServers)
@@ -471,9 +480,10 @@ namespace SurfVpnClientTest1.ViewModels
 
             if (!File.Exists(settingsPath))
             {
-                var settings = new { subscriptionId = 0 };
+                var settings = new { subscriptionId = 208 };
                 string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(settingsPath, json);
+                SubscriptionId = "0";
             }
         }
 
@@ -534,6 +544,22 @@ namespace SurfVpnClientTest1.ViewModels
                 Console.WriteLine("Error reading subscription ID from settings file.");                
             }
             return string.Empty;
+        }
+
+        public bool IsClientInitialized()
+        {
+            // Get the VPN profiles directory path
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string vpnProfilePath = Path.Combine(appDataPath, "TopVpnServers");
+
+            // Check if the directory exists and contains any .ovpn files
+            bool hasProfiles = Directory.Exists(vpnProfilePath) && Directory.EnumerateFiles(vpnProfilePath, "*.ovpn").Any();
+
+            // Check if the subscription ID is not "0" and not empty
+            string subscriptionId = GetSubscriptionId();
+            bool hasValidSubscription = !string.IsNullOrWhiteSpace(subscriptionId) && subscriptionId != "0";
+
+            return hasProfiles && hasValidSubscription;
         }
     }        
 }
