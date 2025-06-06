@@ -8,7 +8,7 @@ namespace SurfVpnClientTest1.Models
 {
     public class SettingsFileModel
     {
-        public int subscriptionId { get; set; }
+        public string subscriptionId { get; set; }
     }
 
 }

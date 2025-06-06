@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using SurfVpnClientTest1.Views;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -26,17 +27,8 @@ namespace SurfVpnClientTest1
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {            
-            if (ConnectionStatus.Text == "Connected")
-            {
-                Disconnect();
-            }
-            else
-            {
-                Connect();
-            }
+
         }
-
-
 
         private async void Disconnect() {
             // Kill the process
@@ -80,6 +72,11 @@ namespace SurfVpnClientTest1
             // Allow dragging the window from anywhere
             if (e.ButtonState == System.Windows.Input.MouseButtonState.Pressed)
                 this.DragMove();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
