@@ -61,11 +61,26 @@
 
                 </Grid>
             </StackPanel>
-            <Button
+            <Button                
                 HorizontalContentAlignment="Center"
+                HorizontalAlignment="Left"
                 Grid.Row="5"
                 Content="Save"
                 Command="{Binding UpdateSubscriptionCommand}"
+                Background="#393A40"
+                Foreground="White"
+                BorderBrush="#393A40"
+                BorderThickness="1"
+                FontWeight="SemiBold"
+                Padding="16,0"
+                Height="36"                
+                Cursor="Hand" Click="Button_Click"/>
+            <Button
+                HorizontalContentAlignment="Center"
+                HorizontalAlignment="Right"
+                Grid.Row="5"
+                Content="Close"                
+                Command="{Binding DataContext.ShowHomeViewCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                 Background="#393A40"
                 Foreground="White"
                 BorderBrush="#393A40"

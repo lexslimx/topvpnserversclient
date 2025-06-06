@@ -33,16 +33,25 @@
               Padding="0"
               Margin="10,0,0,0"/>
             <Button
-                Content="Set"
-                Command="{Binding ShowSettingsCommand}"
-                Background="#393A40"
-                HorizontalAlignment="Right"
-                Foreground="White"
-                BorderBrush="#393A40"
+                ToolTip="Settings"
+                Margin="10,0,0,0"
+                Background="#23242A"
+                HorizontalAlignment="Center"
+                Foreground="Azure"                
                 BorderThickness="1"
-                FontWeight="SemiBold"                
-                Height="36"                
-                Cursor="Hand"/>
+                FontWeight="SemiBold"
+                Height="36"
+                Cursor="Hand"
+                Command="{Binding ShowSettingsCommand}">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Viewbox Width="18" Height="18" VerticalAlignment="Center">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="M12,8.5A3.5,3.5 0 1,0 15.5,12A3.5,3.5 0 0,0 12,8.5ZM19.43,12.98C19.5,12.66 19.5,12.34 19.5,12C19.5,11.66 19.5,11.34 19.43,11.02L21.54,9.37C21.69,9.25 21.74,9.03 21.64,8.84L19.64,5.16C19.54,4.97 19.32,4.91 19.13,4.98L16.74,5.81C16.24,5.42 15.68,5.13 15.05,4.97L14.72,2.42C14.7,2.18 14.5,2 14.25,2H9.75C9.5,2 9.3,2.18 9.28,2.42L8.95,4.97C8.32,5.13 7.76,5.42 7.26,5.81L4.87,4.98C4.68,4.91 4.46,4.97 4.36,5.16L2.36,8.84C2.26,9.03 2.31,9.25 2.46,9.37L4.57,11.02C4.5,11.34 4.5,11.66 4.5,12C4.5,12.34 4.5,12.66 4.57,12.98L2.46,14.63C2.31,14.75 2.26,14.97 2.36,15.16L4.36,18.84C4.46,19.03 4.68,19.09 4.87,19.02L7.26,18.19C7.76,18.58 8.32,18.87 8.95,19.03L9.28,21.58C9.3,21.82 9.5,22 9.75,22H14.25C14.5,22 14.7,21.82 14.72,21.58L15.05,19.03C15.68,18.87 16.24,18.58 16.74,18.19L19.13,19.02C19.32,19.09 19.54,19.03 19.64,18.84L21.64,15.16C21.74,14.97 21.69,14.75 21.54,14.63L19.43,12.98Z"
+                                  Fill="White"/>
+                        </Canvas>
+                    </Viewbox>
+                </StackPanel>
+            </Button>
         </StackPanel>
         <ContentControl Grid.Row="1" Content="{Binding CurrentView}" />
     </Grid>

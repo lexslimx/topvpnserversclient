@@ -30,6 +30,7 @@ namespace SurfVpnClientTest1.ViewModels
         public HomeViewModel()
         {
             this.connectionProfileService = new ConnectionProfileService();
+            GetProfilesFromDirectory();
         }
 
         public ICommand ConnectCommand { get; private set; }
