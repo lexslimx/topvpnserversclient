@@ -76,7 +76,7 @@
             </StackPanel>
 
             <!-- Connect Button -->
-            <Button Grid.Row="3"
+            <Button Grid.Row="4"
                     Content="{Binding ConnectButtonText, Mode=OneWay}"
                     FontSize="18"
                     Margin="24,16,24,0"
@@ -93,7 +93,7 @@
                     />
 
             <!-- Statistics Panel -->
-            <StackPanel Grid.Row="4" Margin="24,16,24,24" Background="#23242A">
+            <StackPanel Grid.Row="5" Margin="24,16,24,24" Background="#23242A">
                 <Separator Margin="0,0,0,16" Background="#393A40" Height="1"/>
                 <TextBlock Text="STATISTICS" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
