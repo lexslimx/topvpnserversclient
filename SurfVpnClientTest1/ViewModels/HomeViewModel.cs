@@ -32,6 +32,7 @@ namespace SurfVpnClientTest1.ViewModels
             this.connectionProfileService = new ConnectionProfileService();
             GetProfilesFromDirectory();
             SubscriptionId = GetSubscriptionId();
+            ConnectButtonText = IsVpnConnected() ? "Disconnect" : "Connect";
         }
 
         public ICommand ConnectCommand { get; private set; }
