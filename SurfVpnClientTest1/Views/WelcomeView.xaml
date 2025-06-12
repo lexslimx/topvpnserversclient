@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       xmlns:vm="clr-namespace:SurfVpnClientTest1.ViewModels"
       Background="#23242A"
-      MaxHeight="525" MaxWidth="350">
+      MaxHeight="400" MaxWidth="350">
     <UserControl.DataContext>
         <vm:WelcomeViewModel/>
     </UserControl.DataContext>
@@ -15,14 +15,9 @@
         <Grid Margin="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="90"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="70"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-            </Grid.ColumnDefinitions>
 
             <!-- Header with Icon -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,30,0,0" Width="300">
@@ -36,59 +31,66 @@
                    Margin="10,0,0,0"/>
             </StackPanel>
 
-            <!-- Subscription Section -->
-            <StackPanel Grid.Row="1" Grid.RowSpan="3" Margin="24,0,24,0" VerticalAlignment="Top">
-                <TextBlock Text="Enter your subscription number" Foreground="#B0B0B0" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,5"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0"
-                         x:Name="SubscriptionText"
-                         Text="{Binding SubscriptionId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Background="#292A30"
-                         Foreground="White"
-                         BorderBrush="#393A40"
-                         BorderThickness="1"
-                         FontSize="16"
-                         Padding="10,4"
-                         Margin="0,0,16,0"
-                         Height="36"
-                         VerticalContentAlignment="Center"
-                         HorizontalContentAlignment="Left"
-                         Style="{x:Null}"/>
+            <!-- Login Panel -->
+            <StackPanel Grid.Row="1" Margin="24,0,24,0" VerticalAlignment="Top" Background="#23242A">
+                <TextBlock Text="Login" Foreground="#B0B0B0" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,5"/>
+                
+                <TextBlock Text="Username" Foreground="#B0B0B0" FontSize="12" Margin="0,0,0,2"/>
+                <TextBox
+                    x:Name="UsernameTextBox"
+                    Text="{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Background="#292A30"
+                    Foreground="White"
+                    BorderBrush="#393A40"
+                    BorderThickness="1"
+                    FontSize="16"
+                    Padding="10,4"
+                    Margin="0,0,0,8"
+                    Height="36"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Left"/>
 
-                </Grid>
+                <TextBlock Text="Password" Foreground="#B0B0B0" FontSize="12" Margin="0,0,0,2"/>
+                <PasswordBox
+                    x:Name="PasswordBox"
+                    Background="#292A30"
+                    Foreground="White"
+                    BorderBrush="#393A40"
+                    BorderThickness="1"
+                    FontSize="16"
+                    Padding="10,4"
+                    Margin="0,0,0,8"
+                    Height="36"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Left"/>
+                    
+                <Button
+                    Content="Login"
+                    Command="{Binding LoginCommand}"
+                    Background="#393A40"
+                    Foreground="White"
+                    BorderBrush="#393A40"
+                    BorderThickness="1"
+                    FontWeight="SemiBold"
+                    Padding="16,0"
+                    Height="36"
+                    Cursor="Hand"/>
             </StackPanel>
-            <Button                
-                HorizontalContentAlignment="Center"
-                HorizontalAlignment="Left"
-                Grid.Row="5"
-                Content="Save"
-                Command="{Binding UpdateSubscriptionCommand}"
-                Background="#393A40"
-                Foreground="White"
-                BorderBrush="#393A40"
-                BorderThickness="1"
-                FontWeight="SemiBold"
-                Padding="16,0"
-                Height="36"                
-                Cursor="Hand" Click="Button_Click"/>
-            <Button
-                HorizontalContentAlignment="Center"
-                HorizontalAlignment="Right"
-                Grid.Row="5"
-                Content="Close"                
-                Command="{Binding DataContext.ShowHomeViewCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                Background="#393A40"
-                Foreground="White"
-                BorderBrush="#393A40"
-                BorderThickness="1"
-                FontWeight="SemiBold"
-                Padding="16,0"
-                Height="36"                
-                Cursor="Hand" Click="Button_Click"/>
+
+            <StackPanel Grid.Row="2" Margin="24,0,24,0" VerticalAlignment="Center">
+                <Button
+                    Content="Close"                
+                    Command="{Binding DataContext.ShowHomeViewCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Background="#393A40"
+                    Foreground="White"
+                    BorderBrush="#393A40"
+                    BorderThickness="1"
+                    FontWeight="SemiBold"
+                    Padding="16,0"
+                    Height="36"                
+                    Cursor="Hand"
+                    HorizontalAlignment="Stretch"/>
+            </StackPanel>
         </Grid>
     </Border>
 </UserControl>
