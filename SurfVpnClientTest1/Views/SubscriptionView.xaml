@@ -22,6 +22,7 @@
                 <RowDefinition Height="90"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
             <!-- Header with Icon -->
@@ -88,7 +89,14 @@
                 </TextBlock>
             </StackPanel>
 
-            <StackPanel Grid.Row="2" Margin="24,0,24,0" VerticalAlignment="Center">
+            <StackPanel Grid.Row="2" Grid.RowSpan="2" Margin="24,0,4,0" VerticalAlignment="Center">
+                <TextBlock
+                    Text="{Binding StatusText}"
+                    Foreground="#B0B0B0"
+                    FontSize="13"
+                    Margin="0,0,0,8"
+                    TextWrapping="Wrap"
+                    HorizontalAlignment="Center"/>
                 <Button
                     Content="Close"                
                     Command="{Binding DataContext.ShowHomeViewCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -106,3 +114,4 @@
         </Grid>
     </Border>
 </UserControl>
+

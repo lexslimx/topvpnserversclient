@@ -48,10 +48,12 @@ namespace SurfVpnClientTest1.ViewModels
                 if (t.IsFaulted)
                 {
                     IsBusy = false;
+                    StatusText = "Error updating subscription: " + t.Exception?.GetBaseException().Message;
                 }
                 else
                 {
                    IsBusy = false;
+                   StatusText = "Subscription updated successfully.";                    
                 }
             });
         }
@@ -80,6 +82,20 @@ namespace SurfVpnClientTest1.ViewModels
                 {
                     _isBusy = value;
                     OnPropertyChanged(nameof(IsBusy));
+                }
+            }
+        }
+        //StatusText
+        private string _statusText;
+        public string StatusText
+        {
+            get => _statusText;
+            set
+            {
+                if (_statusText != value)
+                {
+                    _statusText = value;
+                    OnPropertyChanged(nameof(StatusText));
                 }
             }
         }
