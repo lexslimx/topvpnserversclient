@@ -44,7 +44,7 @@ namespace SurfVpnClientTest1.ViewModels
 
         private readonly HomeView _homeView = new HomeView();
 
-        public ICommand ShowSettingsCommand => new RelayCommand(() => CurrentView = new WelcomeView());
+        public ICommand ShowSettingsCommand => new RelayCommand(() => CurrentView = new SubscriptionView());
         public ICommand ShowHomeViewCommand => new RelayCommand(() => CurrentView = _homeView);
 
         public MainWindowViewModel()

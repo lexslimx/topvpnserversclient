@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using SurfVpnClientTest1.Interfaces;
 using SurfVpnClientTest1.Models;
 using SurfVpnClientTest1.Services;
+using SurfVpnClientTest1.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,17 +14,49 @@ using System.Threading.Tasks;
 
 namespace SurfVpnClientTest1.ViewModels
 {
-    internal class WelcomeViewModel : INotifyPropertyChanged
+    public class SubscriptionViewModel : INotifyPropertyChanged
     {
         private ConnectionProfileService connectionProfileService;
+        public SubscriptionViewModel() 
+        {
+            connectionProfileService = new ConnectionProfileService();
+            SubscriptionId = GetSubscriptionId();
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        public WelcomeViewModel()
+        public RelayCommand UpdateSubscriptionCommand => new RelayCommand(() => SaveSubscriptionIdAsync().ConfigureAwait(false));
+        private async Task SaveSubscriptionIdAsync()
         {
-            connectionProfileService = new ConnectionProfileService();
+
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string settingsPath = Path.Combine(appDataPath, "TopVpnServers", "topvpnserversettings.json");
+
+            // Ensure the directory exists
+            Directory.CreateDirectory(Path.GetDirectoryName(settingsPath)!);
+
+            var settings = new { subscriptionId = SubscriptionId };
+            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(settingsPath, json);
+
+            // On subscriptionUpdate, Get profiles
+            connectionProfileService.DeleteAllProfiles();
+            await GetProfilesFromApiAsync();
+        }
+
+        private string _subscriptionId;
+        public string SubscriptionId
+        {
+            get => _subscriptionId;
+            set
+            {
+                if (_subscriptionId != value)
+                {
+                    _subscriptionId = value;
+                    OnPropertyChanged(nameof(SubscriptionId));
+                }
+            }
         }
 
         private async Task GetProfilesFromApiAsync()
@@ -46,7 +80,6 @@ namespace SurfVpnClientTest1.ViewModels
                 }
             }
         }
-
         public string GetSubscriptionId()
         {
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -63,10 +96,10 @@ namespace SurfVpnClientTest1.ViewModels
                 var settingsFile = System.Text.Json.JsonSerializer.Deserialize<SettingsFileModel>(json);
                 return settingsFile?.subscriptionId.ToString() ?? "0";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Error reading subscription ID from settings file.");
-                throw;              
+                throw;
             }
             return string.Empty;
         }
