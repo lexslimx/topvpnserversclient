@@ -21,6 +21,7 @@ namespace SurfVpnClientTest1.ViewModels
         {
             connectionProfileService = new ConnectionProfileService();
             SubscriptionId = GetSubscriptionId();
+            IsBusy = false;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -29,7 +30,7 @@ namespace SurfVpnClientTest1.ViewModels
         public RelayCommand UpdateSubscriptionCommand => new RelayCommand(() => SaveSubscriptionIdAsync().ConfigureAwait(false));
         private async Task SaveSubscriptionIdAsync()
         {
-
+            IsBusy = true;
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string settingsPath = Path.Combine(appDataPath, "TopVpnServers", "topvpnserversettings.json");
 
@@ -42,7 +43,17 @@ namespace SurfVpnClientTest1.ViewModels
 
             // On subscriptionUpdate, Get profiles
             connectionProfileService.DeleteAllProfiles();
-            await GetProfilesFromApiAsync();
+            await GetProfilesFromApiAsync().ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    IsBusy = false;
+                }
+                else
+                {
+                   IsBusy = false;
+                }
+            });
         }
 
         private string _subscriptionId;
@@ -55,6 +66,20 @@ namespace SurfVpnClientTest1.ViewModels
                 {
                     _subscriptionId = value;
                     OnPropertyChanged(nameof(SubscriptionId));
+                }
+            }
+        }
+
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                if (_isBusy != value)
+                {
+                    _isBusy = value;
+                    OnPropertyChanged(nameof(IsBusy));
                 }
             }
         }

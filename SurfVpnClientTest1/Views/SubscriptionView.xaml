@@ -6,8 +6,13 @@
       xmlns:local="clr-namespace:SurfVpnClientTest1.Views"
       mc:Ignorable="d" 
       xmlns:vm="clr-namespace:SurfVpnClientTest1.ViewModels"
+      xmlns:conv="clr-namespace:SurfVpnClientTest1.Converters"
       Background="#23242A"
       MaxHeight="400" MaxWidth="350">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <conv:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </UserControl.Resources>
     <UserControl.DataContext>
         <vm:SubscriptionViewModel/>
     </UserControl.DataContext>
@@ -58,7 +63,13 @@
                     FontWeight="SemiBold"
                     Padding="16,0"
                     Height="36"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}, ConverterParameter=False}"
                     Cursor="Hand"/>
+
+                <!-- Progress indicator -->
+                <ProgressBar Height="8" Margin="0,10,0,0"
+                             IsIndeterminate="True"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                 <TextBlock HorizontalAlignment="Center" Margin="0,12,0,0">
                     <Hyperlink 
@@ -89,6 +100,7 @@
                     Padding="16,0"
                     Height="36"                
                     Cursor="Hand"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}, ConverterParameter=False}"
                     HorizontalAlignment="Stretch"/>
             </StackPanel>
         </Grid>
