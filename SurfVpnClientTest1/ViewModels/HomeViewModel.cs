@@ -33,9 +33,11 @@ namespace SurfVpnClientTest1.ViewModels
             GetProfilesFromDirectory();
             SubscriptionId = GetSubscriptionId();
             ConnectButtonText = IsVpnConnected() ? "Disconnect" : "Connect";
+            IsBusy = false;
         }
 
-        public ICommand ConnectCommand { get; private set; }
+        public ICommand ConnectCommand => new RelayCommand(Connect);
+
 
         private ObservableCollection<ConnectionProfile> _connectionProfiles = new ObservableCollection<ConnectionProfile>();
         public ObservableCollection<ConnectionProfile> ConnectionProfiles
@@ -63,6 +65,21 @@ namespace SurfVpnClientTest1.ViewModels
                 throw new Exception($"Error reloading profiles: {ex.Message}");
             }
         }
+
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                if (_isBusy != value)
+                {
+                    _isBusy = value;
+                    OnPropertyChanged(nameof(IsBusy));
+                }
+            }
+        }
+
 
         public ICommand DeleteProfileCommand => new RelayCommand(DeleteProfile);
 
@@ -156,7 +173,7 @@ namespace SurfVpnClientTest1.ViewModels
                 Disconnect();
                 return;
             }
-
+            IsBusy = true;
             // CHeck if the selected connection profile is null or empty
             if (SelectedConnectionProfile == null || string.IsNullOrEmpty(SelectedConnectionProfile.Path))
             {
@@ -194,6 +211,7 @@ namespace SurfVpnClientTest1.ViewModels
 
             ConnectionStatus = "Connected";
             IsConnected = true;
+            IsBusy = false;
 
             // Wait for the process to exit
             await openVpnProcess.WaitForExitAsync();
@@ -217,6 +235,7 @@ namespace SurfVpnClientTest1.ViewModels
 
         public void Disconnect()
         {
+            IsBusy = true;
             // Get the running openvpn process
             var openVpnProcess = Process.GetProcessesByName("openvpn").FirstOrDefault();
 
@@ -224,6 +243,7 @@ namespace SurfVpnClientTest1.ViewModels
             {
                 Console.WriteLine("No OpenVPN processes are running.");
                 IsConnected = false;
+                IsBusy = false;
                 return;
             }
 
@@ -251,7 +271,9 @@ namespace SurfVpnClientTest1.ViewModels
                             if (line.Contains(">")) break;
                         }
                         writer.WriteLine("exit");
+                        IsBusy = false;
                     }
+                    IsBusy = false;
                 }
 
                 openVpnProcess.WaitForExit(5000); // Wait up to 5 seconds for process to exit

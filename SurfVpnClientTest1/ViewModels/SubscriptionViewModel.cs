@@ -17,17 +17,20 @@ namespace SurfVpnClientTest1.ViewModels
     public class SubscriptionViewModel : INotifyPropertyChanged
     {
         private ConnectionProfileService connectionProfileService;
+        private readonly PkceAuthService _pkceAuthService = new PkceAuthService();
         public SubscriptionViewModel() 
         {
             connectionProfileService = new ConnectionProfileService();
             SubscriptionId = GetSubscriptionId();
             IsBusy = false;
+            LoginPkceCommand = new AsyncRelayCommand(LoginWithPkce);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         public RelayCommand UpdateSubscriptionCommand => new RelayCommand(() => SaveSubscriptionIdAsync().ConfigureAwait(false));
+        public IRelayCommand LoginPkceCommand { get; }
         private async Task SaveSubscriptionIdAsync()
         {
             IsBusy = true;
@@ -143,6 +146,69 @@ namespace SurfVpnClientTest1.ViewModels
                 throw;
             }
             return string.Empty;
+        }
+
+        private async Task LoginWithPkce()
+        {
+            string redirectUri = "http://localhost:62348/callback";
+            var listenTask = _pkceAuthService.ListenForRedirectAsync(redirectUri);
+
+            string authUrl = _pkceAuthService.GetAuthorizationUrl(redirectUri);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = authUrl,
+                UseShellExecute = true
+            });
+            // After user logs in, handle the redirect and token exchange as needed
+            
+            string code = await listenTask;
+            string tokenResponse = await _pkceAuthService.ExchangeCodeForTokenAsync(code, redirectUri);
+            Console.WriteLine(tokenResponse);
+            // Decode the token response to get claims
+            var tokenData = JsonSerializer.Deserialize<Dictionary<string, object>>(tokenResponse);
+            // Decode the id_token to get user info
+            if (tokenData != null && tokenData.TryGetValue("id_token", out var idTokenObj))
+            {
+                string idToken = idTokenObj.ToString();
+                var claims = ParseJwt(idToken);
+                if (claims != null && claims.TryGetValue("sub", out var subObj))
+                {
+                    string sub = subObj.ToString();
+                    // Set SubscriptionId to sub claim value
+                    SubscriptionId = sub;
+                    await SaveSubscriptionIdAsync();
+                }
+            }
+        }
+
+        private Dictionary<string, object> ParseJwt(string idToken)
+        {
+            if (string.IsNullOrWhiteSpace(idToken))
+                return null;
+
+            // JWT format: header.payload.signature
+            var parts = idToken.Split('.');
+            if (parts.Length < 2)
+                return null;
+
+            string payload = parts[1];
+
+            // Pad the string for base64 decoding
+            int mod4 = payload.Length % 4;
+            if (mod4 > 0)
+                payload += new string('=', 4 - mod4);
+
+            try
+            {
+                var bytes = Convert.FromBase64String(payload.Replace('-', '+').Replace('_', '/'));
+                var json = Encoding.UTF8.GetString(bytes);
+                var claims = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+                return claims;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
